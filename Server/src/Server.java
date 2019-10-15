@@ -1,28 +1,56 @@
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Server {
-    public static final int PORT = 19000;
+    public int port;
+    public String host;
+    private Socket socket;
+    private InputStream input;
+    private OutputStream output;
 
-    public static void main(String[] args) {    //TODO: переработать Server
-        ServerSocket serverSocket = null;
+    Server(String host, int port){
+        this.host = host;
+        this.port = port;
+    }
+
+    public void Listen(){
         try {
-            serverSocket = new ServerSocket(PORT);
-            System.out.println("Started, waiting for connection");
-            Socket socket = serverSocket.accept();
-            System.out.println("Accepted. " + socket.getInetAddress());
-            InputStream in = socket.getInputStream();
-            OutputStream out = socket.getOutputStream();
-            byte[] buf = new byte[32*1024];
-            int readBytes = in.read(buf);
-            String line = new String(buf, 0, readBytes);
-            System.out.printf("Client> %s", line);
-            out.write(line.getBytes()); out.flush();
+            ServerSocket serverSocket = new ServerSocket();
+            System.out.println("Server started, listening.");
+            InetSocketAddress address = new InetSocketAddress(host, port);
+            serverSocket.bind(address);
+            while (serverSocket.isBound()) {
+                Socket socket = serverSocket.accept();
+                input = socket.getInputStream();
+                output = socket.getOutputStream();
+                System.out.println("Accepted from " + socket.getInetAddress());
+                String line = ReceiveData();
+                System.out.println(line);
+            }
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    private String ReceiveData() throws IOException {
+        byte[] buf = new byte[24];
+        var length = input.read(buf);
+        String s = new String(buf, 0, length);
+        return s;
+    }
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Host is: ");
+        String host = scan.nextLine();
+        System.out.print("Port is: ");
+        int port = scan.nextInt();
+        Server server = new Server(host, port);
+        server.Listen();
     }
 }
