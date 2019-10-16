@@ -55,7 +55,7 @@ public class Client {
         try{
             Client client = new Client(host, port);
             client.Connect();
-            System.out.println("Enter text block: ");
+            System.out.print("Enter text block: ");
             String textBlock = scan.nextLine();
             client.TransferData(textBlock);
             client.GetMessage();

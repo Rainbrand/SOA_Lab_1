@@ -33,7 +33,7 @@ public class Server {
                 System.out.println("Accepted from " + socket.getInetAddress());
                 String recievedLine = ReceiveData();
                 System.out.println("Recieved message from client: " + recievedLine);
-                HashMap<String, Integer> countedWords = CountWords(recievedLine);
+                HashMap<String, Integer> countedWords = WordCounter.CountWords(recievedLine);
                 System.out.println("Counted words: " + countedWords);
                 output.write(countedWords.toString().getBytes());
                 output.flush();
@@ -52,18 +52,6 @@ public class Server {
             return s;
         }
         return "Message is not gotten.";
-    }
-
-    private HashMap<String, Integer> CountWords(String text){
-        String[] splittedText = text.toLowerCase().split("[\\s\\W]");
-        HashMap<String, Integer> mapOfWords = new HashMap<String, Integer>(){};
-        for (String word : splittedText) {      //Adds value if word is present
-            if(mapOfWords.containsKey(word)){
-                int count = mapOfWords.get(word);
-                mapOfWords.put(word, ++count);
-            } else mapOfWords.put(word, 1);
-        };
-        return mapOfWords;
     }
 
     public static void main(String[] args) {
