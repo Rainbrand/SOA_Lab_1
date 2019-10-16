@@ -21,7 +21,15 @@ public class Client {
         String msg = (String)data;
         output.write(msg.getBytes());
         output.flush();
-        socket.close();
+    }
+
+    public void GetMessage() throws IOException {
+        byte[] buf = new byte[1024 * 32];
+        var length = input.read(buf);   //Reads message from input into 'buf' and returns lentgh
+        if (length != -1){
+            String s = new String(buf, 0, length);
+            System.out.println(s);
+        }
     }
 
     public void Connect(){
@@ -43,10 +51,14 @@ public class Client {
         String host = scan.nextLine();
         System.out.print("Port is: ");
         int port = scan.nextInt();
+        scan.nextLine();
         try{
             Client client = new Client(host, port);
             client.Connect();
-            client.TransferData("Test data");
+            System.out.println("Enter text block: ");
+            String textBlock = scan.nextLine();
+            client.TransferData(textBlock);
+            client.GetMessage();
         } catch (IOException e){
             e.printStackTrace();
         }

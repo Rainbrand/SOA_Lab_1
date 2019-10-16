@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Server {
@@ -26,29 +27,49 @@ public class Server {
             serverSocket.bind(address);
             while (serverSocket.isBound()) {
                 Socket socket = serverSocket.accept();
-                input = socket.getInputStream();
-                output = socket.getOutputStream();
+                this.input = socket.getInputStream();
+                this.output = socket.getOutputStream();
                 System.out.println("Accepted from " + socket.getInetAddress());
-                String line = ReceiveData();
-                System.out.println(line);
+                String recievedLine = ReceiveData();
+                System.out.println("Recieved message from client: " + recievedLine);
+                HashMap<String, Integer> countedWords = CountWords(recievedLine);
+                System.out.println("Counted words: " + countedWords);
+                output.write(countedWords.toString().getBytes());
+                output.flush();
+                System.out.println("Data sent to client.");
             }
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    private String ReceiveData() throws IOException {
-        byte[] buf = new byte[24];
+    private String ReceiveData() throws IOException {   //Gets data from client
+        byte[] buf = new byte[1024 * 32];
         var length = input.read(buf);
-        String s = new String(buf, 0, length);
-        return s;
+        if (length != -1){
+            String s = new String(buf, 0, length);
+            return s;
+        }
+        return "Message is not gotten.";
+    }
+
+    private HashMap<String, Integer> CountWords(String text){
+        String[] splittedText = text.toLowerCase().split("[\\W]");
+        HashMap<String, Integer> mapOfWords = new HashMap<String, Integer>(){};
+        for (String word : splittedText) {      //Adds value if word is present
+            if(mapOfWords.containsKey(word)){
+                int count = mapOfWords.get(word);
+                mapOfWords.put(word, ++count);
+            } else mapOfWords.put(word, 1);
+        };
+        return mapOfWords;
     }
 
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        System.out.print("Host is: ");
+        System.out.print("Server host is: ");
         String host = scan.nextLine();
-        System.out.print("Port is: ");
+        System.out.print("Server port is: ");
         int port = scan.nextInt();
         Server server = new Server(host, port);
         server.Listen();
