@@ -25,7 +25,7 @@ public class Client {
 
     public void GetMessage() throws IOException {
         byte[] buf = new byte[1024 * 32];
-        var length = input.read(buf);   //Reads message from input into 'buf' and returns lentgh
+        var length = input.read(buf);   //Reads message from input into 'buf' and returns length
         if (length != -1){
             String s = new String(buf, 0, length);
             System.out.println(s);

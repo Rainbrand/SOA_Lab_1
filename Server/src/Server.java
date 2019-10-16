@@ -35,13 +35,17 @@ public class Server {
                 System.out.println("Recieved message from client: " + recievedLine);
                 HashMap<String, Integer> countedWords = WordCounter.CountWords(recievedLine);
                 System.out.println("Counted words: " + countedWords);
-                output.write(countedWords.toString().getBytes());
-                output.flush();
+                SendMessage(countedWords.toString().getBytes());
                 System.out.println("Data sent to client.");
             }
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void SendMessage(byte[] msg) throws IOException {
+        this.output.write(msg);
+        this.output.flush();
     }
 
     private String ReceiveData() throws IOException {   //Gets data from client
