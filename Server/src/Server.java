@@ -22,10 +22,11 @@ public class Server {
     public void Listen(){
         try {
             ServerSocket serverSocket = new ServerSocket();
-            System.out.println("Server started, listening.");
+            System.out.println("Server started.");
             InetSocketAddress address = new InetSocketAddress(host, port);
             serverSocket.bind(address);
             while (serverSocket.isBound()) {
+                System.out.println("Waiting for input.");
                 Socket socket = serverSocket.accept();
                 this.input = socket.getInputStream();
                 this.output = socket.getOutputStream();
@@ -54,7 +55,7 @@ public class Server {
     }
 
     private HashMap<String, Integer> CountWords(String text){
-        String[] splittedText = text.toLowerCase().split("[\\W]");
+        String[] splittedText = text.toLowerCase().split("[\\s\\W]");
         HashMap<String, Integer> mapOfWords = new HashMap<String, Integer>(){};
         for (String word : splittedText) {      //Adds value if word is present
             if(mapOfWords.containsKey(word)){
